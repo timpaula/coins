@@ -1,12 +1,12 @@
 use crate::core::domain::domain::PresenterCommand;
 use crate::core::ports::PresenterPort;
 
-struct StartGameUsecase<'a> {
-    presenter: &'a mut dyn PresenterPort,
+pub(crate) struct StartGameUsecase<'a> {
+    pub(crate) presenter: &'a mut dyn PresenterPort,
 }
 
 impl StartGameUsecase<'_> {
-    fn execute(&mut self) {
+    pub(crate) fn execute(&mut self) {
         self.presenter.execute(PresenterCommand::StartGame);
     }
 }
