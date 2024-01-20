@@ -1,5 +1,7 @@
+use std::fmt::{Display};
 use crate::core::ports::PresenterPort;
 use crate::core::domain::domain::PresenterCommand;
+
 
 #[derive(Default)]
 pub(crate) struct FakePresenter {
