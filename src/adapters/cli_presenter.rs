@@ -1,4 +1,3 @@
-use std::fmt::{Display};
 use crate::core::domain::domain::PresenterCommand;
 use crate::core::ports::PresenterPort;
 
@@ -9,7 +8,10 @@ impl PresenterPort for CliPresenter {
     fn execute(&mut self, command: PresenterCommand) {
         let display_text = match command {
             PresenterCommand::StartGame => {
-                "Game started, welcome!"
+                String::from("Game started, welcome!")
+            },
+            PresenterCommand::ShowError(error) => {
+                format!("Error: {}", error)
             }
         };
         println!("{}", display_text);
