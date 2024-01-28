@@ -10,7 +10,7 @@ pub(crate) struct StartGameUsecase<P: PresenterPort, T: TableStoragePort> {
 impl<P: PresenterPort, T: TableStoragePort> StartGameUsecase<P, T> {
     pub(crate) fn execute(&mut self) {
         self.table_storage.save(Table::default());
-        self.presenter.execute(PresenterCommand::StartGame);
+        self.presenter.execute(PresenterCommand::ShowWelcome);
     }
 }
 
@@ -33,7 +33,7 @@ mod test {
         usecase.execute();
 
         // Then
-        assert_eq!(PresenterCommand::StartGame, usecase.presenter.get_previous_command().unwrap());
+        assert_eq!(PresenterCommand::ShowWelcome, usecase.presenter.get_previous_command().unwrap());
         assert_eq!(Table::default(), usecase.table_storage.load());
     }
 

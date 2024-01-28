@@ -9,12 +9,12 @@ pub(crate) struct FakePresenter {
 
 impl PresenterPort for FakePresenter {
     fn execute(&mut self, presenter_command: PresenterCommand) {
-        self.previous_command = Some(presenter_command);
+        self.previous_command = Some(presenter_command.clone());
     }
 }
 
 impl FakePresenter {
     pub(crate) fn get_previous_command(&self) -> Option<PresenterCommand> {
-        self.previous_command
+        self.previous_command.clone()
     }
 }
