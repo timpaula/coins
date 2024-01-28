@@ -1,4 +1,3 @@
-use crate::core::domain::domain::{PresenterCommand};
 use crate::core::ports::{PresenterPort, TableStoragePort};
 
 #[derive(Default)]
@@ -13,24 +12,21 @@ impl<P: PresenterPort, T: TableStoragePort> ThrowCoinUsecase<P, T> {
 
         let result = table.throw_coin(num);
         if let Err(err) = result {
-            self.presenter.execute(PresenterCommand::ShowError(err));
+            self.presenter.show_error(err);
             return;
         }
 
-        let command = PresenterCommand::ShowTable(table.clone());
-        self.presenter.execute(command);
+        self.presenter.show_table(&table);
         self.table_storage.save(table);
     }
 }
 
 #[cfg(test)]
 mod test {
-    use std::ops::Deref;
-    use log::error;
     use crate::adapters::fake_presenter::FakePresenter;
     use crate::adapters::in_memory_table_storage::InMemoryTableStorage;
     use crate::core::domain::domain::{Coin, DomainError, Table};
-    use crate::core::domain::domain::PresenterCommand::{ShowError, ShowTable};
+    use crate::adapters::fake_presenter::PresenterCommand::{ShowError, ShowTable};
     use crate::core::usecases::throw_coin::ThrowCoinUsecase;
 
     #[test]
@@ -39,19 +35,17 @@ mod test {
         let mut throw_coin_usecase = ThrowCoinUsecase::<FakePresenter, InMemoryTableStorage>::default();
 
         // when
-        let column_number = 3;
-        throw_coin_usecase.execute(column_number);
+        let column_index = 3;
+        throw_coin_usecase.execute(column_index);
 
         // then
         let prev_command = throw_coin_usecase.presenter
             .get_previous_command()
             .expect("Expected something to have been presented.");
 
-        assert!(matches!(prev_command, ShowTable(_)));
-
         let ShowTable(table) = prev_command else { panic!("Expected table to have been presented.") };
 
-        assert_eq!(Table::default().with_a_coin_at_column(Coin::Green, column_number), table);
+        assert_eq!(Table::default().with_a_coin_at_column(Coin::Green, column_index), table);
     }
     #[test]
     fn test_throw_last_coin_in_column() {
@@ -67,11 +61,11 @@ mod test {
         let mut throw_coin_usecase = ThrowCoinUsecase::<FakePresenter, InMemoryTableStorage>::default();
 
         // when
-        let column_number = 6;
-        throw_coin_usecase.execute(column_number);
+        let column_index = 6;
+        throw_coin_usecase.execute(column_index);
 
         // then
-        assert_eq!(ShowError(DomainError::TableColumnOutOfRange(column_number)), throw_coin_usecase.presenter.get_previous_command().unwrap());
+        assert_eq!(ShowError(DomainError::TableColumnOutOfRange(column_index)), throw_coin_usecase.presenter.get_previous_command().unwrap());
     }
 
 }

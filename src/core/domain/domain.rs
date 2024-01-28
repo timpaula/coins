@@ -1,13 +1,7 @@
-use std::fmt::{Debug};
+use std::fmt::Debug;
 use thiserror::Error;
 use crate::core::domain::domain::DomainError::{ColumnFull, TableColumnOutOfRange};
 
-#[derive(PartialEq, Debug, Clone)]
-pub(crate) enum PresenterCommand {
-    ShowWelcome,
-    ShowTable(Table),
-    ShowError(DomainError),
-}
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) enum Coin {
     Green,
@@ -88,7 +82,7 @@ pub(crate) enum DomainError {
 
 #[cfg(test)]
 pub(crate) mod test {
-    use crate::core::domain::domain::DomainError::{TableColumnOutOfRange, ColumnFull};
+    use crate::core::domain::domain::DomainError::{ColumnFull, TableColumnOutOfRange};
     use crate::core::domain::domain::{Coin, Table};
 
     #[test]
@@ -149,6 +143,7 @@ pub(crate) mod test {
             let column = &mut self.columns[column_index];
             let row_index = column.get_first_available_index().expect("Expected to have available slot in column.");
             column.0[row_index] = Some(color);
+            self.next_playing_color = color.other();
             self
         }
     }

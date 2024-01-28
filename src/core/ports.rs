@@ -1,8 +1,9 @@
-use crate::core::domain::domain::{DomainError, PresenterCommand, Table};
+use crate::core::domain::domain::{DomainError, Table};
 
 pub trait PresenterPort {
-    fn execute(& mut self, _: PresenterCommand);
-
+    fn show_welcome(&mut self);
+    fn show_error(&mut self, _: DomainError);
+    fn show_table(&mut self, table: &Table);
 }
 
 pub trait TableStoragePort {

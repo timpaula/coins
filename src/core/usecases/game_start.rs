@@ -1,4 +1,4 @@
-use crate::core::domain::domain::{PresenterCommand, Table};
+use crate::core::domain::domain::Table;
 use crate::core::ports::{PresenterPort, TableStoragePort};
 
 #[derive(Default)]
@@ -10,7 +10,7 @@ pub(crate) struct StartGameUsecase<P: PresenterPort, T: TableStoragePort> {
 impl<P: PresenterPort, T: TableStoragePort> StartGameUsecase<P, T> {
     pub(crate) fn execute(&mut self) {
         self.table_storage.save(Table::default());
-        self.presenter.execute(PresenterCommand::ShowWelcome);
+        self.presenter.show_welcome();
     }
 }
 
@@ -18,8 +18,7 @@ impl<P: PresenterPort, T: TableStoragePort> StartGameUsecase<P, T> {
 mod test {
     use crate::adapters::fake_presenter::FakePresenter;
     use crate::adapters::in_memory_table_storage::InMemoryTableStorage;
-    use crate::core::domain::
-    domain::PresenterCommand;
+    use crate::adapters::fake_presenter::PresenterCommand;
     use crate::core::domain::domain::Table;
     use crate::core::ports::TableStoragePort;
     use crate::core::usecases::game_start::StartGameUsecase;
