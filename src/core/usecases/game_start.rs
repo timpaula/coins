@@ -1,12 +1,13 @@
 use crate::core::domain::domain::{PresenterCommand, Table};
 use crate::core::ports::{PresenterPort, TableStoragePort};
 
-pub(crate) struct StartGameUsecase<'a> {
-    pub(crate) presenter: &'a mut dyn PresenterPort,
-    pub(crate) table_storage: &'a mut dyn TableStoragePort,
+#[derive(Default)]
+pub(crate) struct StartGameUsecase<P: PresenterPort, T: TableStoragePort> {
+    pub(crate) presenter: P,
+    pub(crate) table_storage: T,
 }
 
-impl StartGameUsecase<'_> {
+impl<P: PresenterPort, T: TableStoragePort> StartGameUsecase<P, T> {
     pub(crate) fn execute(&mut self) {
         self.table_storage.save(Table::default());
         self.presenter.execute(PresenterCommand::StartGame);
@@ -25,21 +26,15 @@ mod test {
 
     #[test]
     fn test_game_started() {
-        let mut fake_presenter = FakePresenter::default();
-        let mut table_storage = InMemoryTableStorage::default();
-
         // Given
-        let mut usecase = StartGameUsecase {
-            presenter: &mut fake_presenter,
-            table_storage: &mut table_storage
-        };
+        let mut usecase = StartGameUsecase::<FakePresenter, InMemoryTableStorage>::default();
 
         // When
         usecase.execute();
 
         // Then
-        assert_eq!(PresenterCommand::StartGame, fake_presenter.get_previous_command().unwrap());
-        assert_eq!(Table::default(), table_storage.load());
+        assert_eq!(PresenterCommand::StartGame, usecase.presenter.get_previous_command().unwrap());
+        assert_eq!(Table::default(), usecase.table_storage.load());
     }
 
     #[test]

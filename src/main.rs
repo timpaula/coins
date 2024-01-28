@@ -6,13 +6,7 @@ mod core;
 mod adapters;
 
 fn main() {
-    let mut presenter = CliPresenter::default();
-    let mut table_storage = InMemoryTableStorage::default();
-
-    let mut start_game_usecase = StartGameUsecase {
-        presenter: &mut presenter,
-        table_storage: &mut table_storage
-    };
+    let mut start_game_usecase = StartGameUsecase::<CliPresenter, InMemoryTableStorage>::default();
 
     start_game_usecase.execute();
 }

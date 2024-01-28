@@ -1,12 +1,13 @@
 use crate::core::domain::domain::{PresenterCommand};
 use crate::core::ports::{PresenterPort, TableStoragePort};
 
-struct ThrowCoinUsecase<'a> {
-    presenter: &'a mut dyn PresenterPort,
-    table_storage: &'a mut dyn TableStoragePort,
+#[derive(Default)]
+struct ThrowCoinUsecase<P: PresenterPort, T: TableStoragePort> {
+    presenter: P,
+    table_storage: T,
 }
 
-impl ThrowCoinUsecase<'_> {
+impl<P: PresenterPort, T: TableStoragePort> ThrowCoinUsecase<P, T> {
     pub(crate) fn execute(&mut self, num: usize) {
         let mut table = self.table_storage.load();
 
@@ -42,17 +43,14 @@ mod test {
     #[test]
     fn test_column_number_out_of_range() {
         // given
-        let mut fake_presenter = FakePresenter::default();
-        let mut storage = InMemoryTableStorage::default();
-
-        let mut throw_coin_usecase = ThrowCoinUsecase { presenter: &mut fake_presenter, table_storage: &mut storage };
+        let mut throw_coin_usecase = ThrowCoinUsecase::<FakePresenter, InMemoryTableStorage>::default();
 
         // when
         let column_number = 6;
         throw_coin_usecase.execute(column_number);
 
         // then
-        assert_eq!(ShowError(DomainError::TableColumnOutOfRange(column_number)), fake_presenter.get_previous_command().unwrap());
+        assert_eq!(ShowError(DomainError::TableColumnOutOfRange(column_number)), throw_coin_usecase.presenter.get_previous_command().unwrap());
     }
 
 }
