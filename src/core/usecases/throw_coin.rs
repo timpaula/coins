@@ -45,11 +45,17 @@ mod test {
 
         let ShowTable(table) = prev_command else { panic!("Expected table to have been presented.") };
 
-        assert_eq!(Table::default().with_a_coin_at_column(Coin::Green, column_index), table);
+        assert_eq!(Table::default().with_one_more_coin_at_column(Coin::Green, column_index), table);
     }
     #[test]
     fn test_throw_last_coin_in_column() {
-        todo!()
+        // given
+        let mut throw_coin_usecase = ThrowCoinUsecase::<FakePresenter, InMemoryTableStorage>::default();
+
+        // when
+        let column_index = 3;
+        throw_coin_usecase.execute(column_index);
+
     }
     #[test]
     fn test_throw_in_full_column() {

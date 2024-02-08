@@ -1,4 +1,5 @@
 use std::fmt::Debug;
+use std::ops::Deref;
 use thiserror::Error;
 use crate::core::domain::domain::DomainError::{ColumnFull, TableColumnOutOfRange};
 
@@ -20,6 +21,14 @@ impl Coin {
 /// In each column, the first index (0) refers to the bottom of the column. And increases upwards.
 #[derive(Default, Clone, Debug, PartialEq)]
 struct TableColumn([Option<Coin>; 5]);
+
+impl Deref for TableColumn {
+    type Target = [Option<Coin>; 5];
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 impl TableColumn {
     pub(crate) fn available_spot_count(&self) -> usize {
@@ -69,6 +78,9 @@ impl Table {
 
     pub fn next_playing_color(&self) -> Coin {
         self.next_playing_color
+    }
+    pub fn columns(&self) -> &[TableColumn] {
+        &self.columns
     }
 }
 
@@ -139,7 +151,7 @@ pub(crate) mod test {
     }
 
     impl Table {
-        pub(crate) fn with_a_coin_at_column(mut self, color: Coin, column_index: usize) -> Self {
+        pub(crate) fn with_one_more_coin_at_column(mut self, color: Coin, column_index: usize) -> Self {
             let column = &mut self.columns[column_index];
             let row_index = column.get_first_available_index().expect("Expected to have available slot in column.");
             column.0[row_index] = Some(color);
